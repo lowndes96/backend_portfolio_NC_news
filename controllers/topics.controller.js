@@ -1,4 +1,4 @@
-const {findALlTopics} = require('../models/topics.model')
+const {findALlTopics, findArticleById} = require('../models/topics.model')
 const endpoints = require('../endpoints.json')
 
 function getAllTopics(req,res,next){
@@ -25,4 +25,11 @@ function getApi(req,res,next){
     }
 }
 
-module.exports = {getAllTopics, getApi}
+function getArticle(req,res,next){
+    const {article_id} = req.params
+    findArticleById(article_id).then((article) => {
+        res.status(200).send({'article':article})
+    })
+}
+
+module.exports = {getAllTopics, getApi, getArticle}
