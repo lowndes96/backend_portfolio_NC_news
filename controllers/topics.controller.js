@@ -17,7 +17,6 @@ function getAllTopics(req,res,next){
 }
 
 function getApi(req,res,next){
-    console.log(endpoints.length)
     if (endpoints){
         res.status(200).send({'api' : endpoints})
     }
