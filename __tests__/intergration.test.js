@@ -1,11 +1,11 @@
 const app =require('../app')
 const request = require('supertest')
-const db = require('../db/connection')
 const seed = require('../db/seeds/seed')
 const data = require('../db/data/test-data/index')
+const connection = require('../db/connection')
 
-beforeEach(()=>{seed(data)})
-// afterAll(() => db.end())
+beforeEach(()=>seed(data))
+afterAll(() => connection.end())
 
 describe('GET api/topics', () => {
     test('get 200: sends an array of all topics to client', () => {
@@ -21,4 +21,4 @@ describe('GET api/topics', () => {
         })
 
     })
-});
+    });
