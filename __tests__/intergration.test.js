@@ -13,6 +13,11 @@ describe('GET api/topics', () => {
         .expect(200)
         .then (({body}) => {
             expect(body.topics.length).toBe(3)
+            body.topics.forEach((topic) => {
+                expect(typeof topic.description).toBe('string')
+                expect(typeof topic.slug).toBe('string')
+
+            });
         })
 
     })
