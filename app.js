@@ -1,11 +1,14 @@
 
 const express = require('express')
 const app = express()
-const {getAllTopics} =require('./controllers/topics.controller')
+const {getAllTopics, getApi} =require('./controllers/topics.controller')
+
 
 
 
 app.get('/api/topics', getAllTopics)
+
+app.get('/api',getApi )
 
 app.use((err,req,res,next) => {
     if (err.msg){
