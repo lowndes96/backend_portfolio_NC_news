@@ -1,4 +1,5 @@
 const {findALlTopics} = require('../models/topics.model')
+const endpoints = require('../endpoints.json')
 
 function getAllTopics(req,res,next){
     findALlTopics()
@@ -15,4 +16,13 @@ function getAllTopics(req,res,next){
     })
 }
 
-module.exports = {getAllTopics}
+function getApi(req,res,next){
+    if (endpoints){
+        res.status(200).send({'api' : endpoints})
+    }
+    else {
+        return Promise.reject({status: 404, msg: 'No results Found'})
+    }
+}
+
+module.exports = {getAllTopics, getApi}
