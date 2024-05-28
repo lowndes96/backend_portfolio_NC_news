@@ -1,6 +1,7 @@
 # Northcoders News API
 
-For instructions, please head over to [L2C NC News](https://l2c.northcoders.com/courses/be/nc-news).
+In order to use this repository you must set an environment variable of PGDATABASE in an env.development file. 
+The psql database used in this project includes data with the following keys: topicData,articleData, userData and CommentData. 
 
 
 
