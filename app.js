@@ -16,6 +16,8 @@ app.get('/api/articles', getAllArticles)
 
 
 
+
+
 app.use((err,req,res,next) => {
     if (err.msg){
         res.status(err.status).send({'msg':err.msg})
