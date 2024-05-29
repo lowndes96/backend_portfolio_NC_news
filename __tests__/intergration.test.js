@@ -115,12 +115,54 @@ describe('GET /api/articles/:article_id/comments', () => {
           expect(body.comments).toEqual([])
       })
   })
-  test('400: returns error when article_id does not exist', () => {
+  test('404: returns error when article_id does not exist', () => {
     return request(app)
     .get('/api/articles/999/comments')
-    .expect(400)
+    .expect(404)
     .then(({body}) => {
-      expect(body.msg).toBe('No results Found')
+      expect(body.msg).toBe('No Article Found')
   })
 });
 })
+
+describe('POST /api/articles/:article_id/comments', () => {
+  test('201: should post a new comment to the article', () => {
+    const testComment = {username: 'lurker', body: 'wow, a comment!'}
+    return request(app)
+    .post('/api/articles/1/comments')
+    .send(testComment)
+    .expect(201)
+    .then(({body}) => {
+        expect(body.newComment).toEqual('wow, a comment!')})
+    })
+    test('400: returns error when comment does not contain the correct catagorys', () => {
+      const testComment = {incorrect: 'lurker', notHere: 'wow, a comment!'}
+      return request(app)
+      .post('/api/articles/1/comments')
+      .send(testComment)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe('Bad Request')
+    })
+  })
+  test('400: returns error when the user is not listed', () => {
+    const testComment = {username: 'Emily', body: 'wow, a comment!'}
+    return request(app)
+    .post('/api/articles/1/comments')
+    .send(testComment)
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toBe('User Not registered')
+  })
+});
+test('404: returns error when article does not exist', () => {
+  const testComment = {username: 'lurker', body: 'wow, a comment!'}
+  return request(app)
+  .post('/api/articles/999/comments')
+  .send(testComment)
+  .expect(404)
+  .then(({body}) => {
+    expect(body.msg).toBe('No Article Found')
+})
+});
+});
