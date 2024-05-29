@@ -24,7 +24,11 @@ function findAllArticles(){
     GROUP BY articles.article_id
     ORDER BY articles.created_at DESC`)
     .then((result) => {
-        return result.rows
+        const editedOutput = result.rows.map((article) => {
+            delete article.body
+            return article
+        })
+        return editedOutput
     })
 }
 

@@ -64,7 +64,7 @@ describe('GET /api/articles/:article_id', () => {
 });
 
 describe('GET /api/aricles', () => {
-  test('200: should return list of all articles in decending date order', () => {
+  test('200: should return list of all articles in decending date order, with a comment count and no body', () => {
     return request(app)
     .get('/api/articles')
     .expect(200)
@@ -82,6 +82,7 @@ describe('GET /api/aricles', () => {
             article_img_url:expect.any(String),
             comment_count: expect.any(String)
           })
+          expect(article).not.toHaveProperty('body')
         })
     })
   });
