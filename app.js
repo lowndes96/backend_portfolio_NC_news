@@ -1,7 +1,7 @@
 
 const express = require('express')
 const app = express()
-const {getAllTopics, getApi, getArticle, getAllArticles} =require('./controllers/topics.controller')
+const {getAllTopics, getApi, getArticle, getAllArticles, getcommentsByArticle} =require('./controllers/topics.controller')
 
 
 
@@ -13,6 +13,8 @@ app.get('/api',getApi )
 app.get('/api/articles/:article_id', getArticle)
 
 app.get('/api/articles', getAllArticles)
+
+app.get('/api/articles/:article_id/comments', getcommentsByArticle)
 
 
 

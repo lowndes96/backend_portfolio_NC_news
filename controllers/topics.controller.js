@@ -1,4 +1,4 @@
-const {findALlTopics, findArticleById, findAllArticles} = require('../models/topics.model')
+const {findALlTopics, findArticleById, findAllArticles, findCommentsByArticle, checkArticleExists} = require('../models/topics.model')
 const endpoints = require('../endpoints.json')
 
 function getAllTopics(req,res,next){
@@ -48,4 +48,25 @@ function getAllArticles(req,res,next){
     )
 }
 
-module.exports = {getAllTopics, getApi, getArticle,getAllArticles}
+function getcommentsByArticle(req,res,next){
+    const {article_id} = req.params; 
+    const promises = [checkArticleExists(article_id)] 
+    if (isNaN(article_id)){
+        res.status(400).send({status: 400, msg: 'Bad Request'}) 
+    }
+
+    if (article_id){
+        promises.push(findCommentsByArticle(article_id))
+    }
+    //does article_id exist? 
+    Promise.all(promises)
+    .then((resolvedPromises) => {
+        const comments = resolvedPromises[1]
+        res.status(200).send({'comments':comments})
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = {getAllTopics, getApi, getArticle,getAllArticles, getcommentsByArticle}
