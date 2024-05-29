@@ -27,9 +27,18 @@ function getApi(req,res,next){
 
 function getArticle(req,res,next){
     const {article_id} = req.params
-    findArticleById(article_id).then((article) => {
-        res.status(200).send({'article':article})
+    if (isNaN(article_id)){
+        res.status(400).send({status: 400, msg: 'Bad Request'}) 
+    }
+    findArticleById(article_id)
+    .then((article) => {
+        if (article.length === 1){
+            res.status(200).send({'article':article}) }
+        else {
+            return Promise.reject({status: 404, msg: 'No results Found'})
+        }
     })
+    .catch((err) => {next(err)})
 }
 
 module.exports = {getAllTopics, getApi, getArticle}
