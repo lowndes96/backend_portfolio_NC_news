@@ -45,4 +45,20 @@ describe('GET /api/articles/:article_id', () => {
             expect(body.article).toEqual(output)
         })
     });
+    test('get 404: should return an appropriate error message when passed an article id that returns no results', () => {
+        return request(app)
+        .get('/api/articles/999')
+        .expect(404)
+        .then(({body}) => {
+            expect(body.msg).toBe('No results Found')
+        })
+    });
+    test('get 400: should return an error when passed an invalid article_id', () => {
+        return request(app)
+        .get('/api/articles/apple')
+        .expect(400)
+        .then(({body}) => {
+            expect(body.msg).toBe('Bad Request')
+        })
+    });
 });
