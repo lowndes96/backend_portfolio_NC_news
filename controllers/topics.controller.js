@@ -6,8 +6,9 @@ const {
   checkArticleExists,
   makeNewComment,
   isExistingUser,
-  changeVotes, 
-  removeComment
+  changeVotes,
+  removeComment,
+  fetchAllUsers
 } = require('../models/topics.model');
 const endpoints = require('../endpoints.json');
 
@@ -87,7 +88,6 @@ function postComment(req, res, next) {
       isExistingUser(comment.username),
       checkArticleExists(article_id),
       makeNewComment(comment, article_id),
-
     ];
 
     Promise.all(promises)
@@ -100,27 +100,37 @@ function postComment(req, res, next) {
   }
 }
 
-function patchVotes(req,res,next){
-  const updateVote = req.body.inc_votes
-  const {article_id} = req.params
-  const promises = [findArticleById(article_id), ]
-  changeVotes(updateVote,article_id).then((updatedArticle) => {
-    res.status(200).send(updatedArticle)
-  })
-  .catch((err) => {
-    next(err)})
+function patchVotes(req, res, next) {
+  const updateVote = req.body.inc_votes;
+  const { article_id } = req.params;
+  changeVotes(updateVote, article_id)
+    .then((updatedArticle) => {
+      res.status(200).send(updatedArticle);
+    })
+    .catch((err) => {
+      next(err);
+    });
 }
 
-function deleteComment(req,res,next){
-  const commentId = req.params.comment_id
-    removeComment(commentId)
+function deleteComment(req, res, next) {
+  const commentId = req.params.comment_id;
+  removeComment(commentId)
     .then((comment) => {
-      if (comment[0].comment_id == commentId){
-        res.status(204).send({})
+      if (comment[0].comment_id == commentId) {
+        res.status(204).send({});
       }
     })
-    .catch((err) => {next(err)})
+    .catch((err) => {
+      next(err);
+    });
 }
+
+function getAllUsers(req,res,next){
+  fetchAllUsers().then((users) => {
+    res.status(200).send({users})
+  })
+}
+
 module.exports = {
   getAllTopics,
   getApi,
@@ -128,6 +138,7 @@ module.exports = {
   getAllArticles,
   getcommentsByArticle,
   postComment,
-  patchVotes, 
-  deleteComment
+  patchVotes,
+  deleteComment,
+  getAllUsers
 };
