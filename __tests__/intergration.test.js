@@ -195,8 +195,35 @@ describe('PATCH /api/articles/:article_id', () => {
     .send(newVote)
     .expect(404)
     .then(({body}) => {
-      // console.log(body)
         expect(body.msg).toBe('No Article Found')
     })
 });
 })
+
+describe('DELETE /api/comments/:comment_id', () => {
+  test('204: deletes comment and returns no content', () => {
+    return request(app)
+    .delete('/api/comments/2')
+    .expect(204)
+    .then(({body}) => {
+        expect(body).toEqual({})
+    })
+    .then(() =>{
+      return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({body}) => {
+          expect(body.comments.length).toBe(10)
+
+})
+    })
+  });
+  test('404: comment not found', () => {
+    return request(app)
+    .delete('/api/comments/99')
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe('Comment Not Found')
+    })
+  });
+});

@@ -6,7 +6,8 @@ const {
   checkArticleExists,
   makeNewComment,
   isExistingUser,
-  changeVotes
+  changeVotes, 
+  removeComment
 } = require('../models/topics.model');
 const endpoints = require('../endpoints.json');
 
@@ -110,6 +111,16 @@ function patchVotes(req,res,next){
     next(err)})
 }
 
+function deleteComment(req,res,next){
+  const commentId = req.params.comment_id
+    removeComment(commentId)
+    .then((comment) => {
+      if (comment[0].comment_id == commentId){
+        res.status(204).send({})
+      }
+    })
+    .catch((err) => {next(err)})
+}
 module.exports = {
   getAllTopics,
   getApi,
@@ -117,5 +128,6 @@ module.exports = {
   getAllArticles,
   getcommentsByArticle,
   postComment,
-  patchVotes
+  patchVotes, 
+  deleteComment
 };
