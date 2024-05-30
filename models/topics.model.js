@@ -16,28 +16,31 @@ function findArticleById(articleId) {
     });
 }
 
-function findAllArticles() {
-  // const commentCount = db.query(`SELECT COUNT(body) AS comment_count FROM comments WHERE `)
-  return db
-    .query(
-      `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
-    FROM articles 
-    LEFT JOIN comments ON articles.article_id = comments.article_id 
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC`
-    )
-    .then((result) => {
-      const editedOutput = result.rows.map((article) => {
-        delete article.body;
-        return article;
-      });
-      return editedOutput;
+function findAllArticles(filterBy) {
+  let sqlQuery = `SELECT articles.*, COUNT(comments.comment_id) AS comment_count
+  FROM articles 
+  LEFT JOIN comments ON articles.article_id = comments.article_id`;
+  const queryValues = [];
+
+  if (filterBy) {
+    sqlQuery += ` WHERE articles.topic = $1`;
+    queryValues.push(filterBy);
+  }
+
+  sqlQuery += ` GROUP BY articles.article_id
+  ORDER BY articles.created_at DESC`;
+
+  return db.query(sqlQuery, queryValues).then((result) => {
+    const editedOutput = result.rows.map((article) => {
+      delete article.body;
+      return article;
     });
+    return editedOutput;
+  });
 }
 
 function findCommentsByArticle(articleId) {
   const id = [articleId];
-  //   console.log('find comms')
   return db
     .query(
       `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
@@ -47,7 +50,7 @@ function findCommentsByArticle(articleId) {
       return result.rows;
     })
     .catch((err) => {
-      return Promise.reject({ status: 400, msg: 'No results Found*' });
+      return Promise.reject({ status: 400, msg: 'No results Found' });
     });
 }
 
@@ -107,11 +110,10 @@ function removeComment(commentId) {
     });
 }
 
-function fetchAllUsers(){
-  return db.query(`SELECT * FROM users;`)
-  .then((result) => {
-    return result.rows
-  })
+function fetchAllUsers() {
+  return db.query(`SELECT * FROM users;`).then((result) => {
+    return result.rows;
+  });
 }
 
 module.exports = {
@@ -124,5 +126,5 @@ module.exports = {
   isExistingUser,
   changeVotes,
   removeComment,
-  fetchAllUsers
+  fetchAllUsers,
 };

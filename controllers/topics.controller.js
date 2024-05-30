@@ -53,9 +53,17 @@ function getArticle(req, res, next) {
 }
 
 function getAllArticles(req, res, next) {
-  findAllArticles().then((articles) => {
-    res.status(200).send({ articles: articles });
-  });
+  const filterBy = req.query.filter_by
+  findAllArticles(filterBy).then((articles) => {
+    if (articles.length === 0){
+      return Promise.reject({ status: 404, msg: 'No results Found' });
+    }
+    else{
+      
+      res.status(200).send({ articles: articles });
+    }
+  })
+  .catch((err) => { next(err)})
 }
 
 function getcommentsByArticle(req, res, next) {
