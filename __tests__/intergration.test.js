@@ -98,7 +98,29 @@ describe('GET /api/aricles', () => {
         });
       });
   });
+  test('should return a 200 containing all articles with the provided topic query', () => {
+    return request(app)
+    .get('/api/articles?filter_by=mitch')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.articles.length).toBe(12);
+      expect(body.articles).toBeSortedBy('created_at', { descending: true });
+      body.articles.forEach((article) => {
+        expect(article.topic).toBe('mitch');
+      });
+    });
+  });
+  test('should return a 404 when the topic query does not exist', () => {
+    return request(app)
+    .get('/api/articles?filter_by=yellow')
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe('No results Found');
+    })
+  });
 });
+
+
 describe('GET /api/articles/:article_id/comments', () => {
   test('200: returns all comments for provided article parameter, by most reacent', () => {
     return request(app)
@@ -128,6 +150,7 @@ describe('GET /api/articles/:article_id/comments', () => {
         expect(body.comments).toEqual([]);
       });
   });
+
   test('404: returns error when article_id does not exist', () => {
     return request(app)
       .get('/api/articles/999/comments')
