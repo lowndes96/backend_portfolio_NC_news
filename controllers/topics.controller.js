@@ -6,6 +6,7 @@ const {
   checkArticleExists,
   makeNewComment,
   isExistingUser,
+  changeVotes
 } = require('../models/topics.model');
 const endpoints = require('../endpoints.json');
 
@@ -80,10 +81,7 @@ function postComment(req, res, next) {
   if (!comment.hasOwnProperty('username') && !comment.hasOwnProperty('body')) {
     res.status(400).send({ status: 400, msg: 'Bad Request' });
   } else {
-    //if statment with existing user check?
-    //exisiting article?
     const { article_id } = req.params;
-    // console.log(article_id)
     const promises = [
       isExistingUser(comment.username),
       checkArticleExists(article_id),
@@ -93,13 +91,23 @@ function postComment(req, res, next) {
 
     Promise.all(promises)
       .then(([isUser, articleExists, newComment]) => {
-        console.log([isUser,articleExists,newComment])
         res.status(201).send({ newComment: newComment.body });
       })
       .catch((err) => {
         next(err);
       });
   }
+}
+
+function patchVotes(req,res,next){
+  const updateVote = req.body.inc_votes
+  const {article_id} = req.params
+  const promises = [findArticleById(article_id), ]
+  changeVotes(updateVote,article_id).then((updatedArticle) => {
+    res.status(200).send(updatedArticle)
+  })
+  .catch((err) => {
+    next(err)})
 }
 
 module.exports = {
@@ -109,4 +117,5 @@ module.exports = {
   getAllArticles,
   getcommentsByArticle,
   postComment,
+  patchVotes
 };

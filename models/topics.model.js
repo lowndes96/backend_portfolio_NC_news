@@ -75,6 +75,20 @@ function isExistingUser(username){
     })
 }
 
+function changeVotes(newVote, articleId){
+  const queryValues = [newVote, articleId]
+  const sqlQuery = `UPDATE articles 
+  SET votes = votes + $1 WHERE  article_id = $2 RETURNING *;`
+  return db.query(sqlQuery, queryValues).then((result) => {
+    if (result.rows.length === 0) {
+      return Promise.reject({'status':404, 'msg':'No Article Found'})
+    }
+    else{
+      return result.rows[0]
+    }
+  })
+}
+
 module.exports = {
   findALlTopics,
   findArticleById,
@@ -82,5 +96,6 @@ module.exports = {
   findCommentsByArticle,
   checkArticleExists,
   makeNewComment, 
-  isExistingUser
+  isExistingUser,
+  changeVotes
 };

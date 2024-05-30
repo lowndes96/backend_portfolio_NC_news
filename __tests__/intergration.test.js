@@ -166,3 +166,37 @@ test('404: returns error when article does not exist', () => {
 })
 });
 });
+
+describe('PATCH /api/articles/:article_id', () => {
+  test('200: should increase vote count by number specified', () => {
+    const newVote = { inc_votes : 1 }
+    const updatedArticle =   {
+      article_id: 1,
+      title: "Living in the shadow of a great man",
+      topic: "mitch",
+      author: "butter_bridge",
+      body: "I find this existence challenging",
+      created_at: "2020-07-09T20:11:00.000Z",
+      votes: 101,
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    }
+    return request(app)
+    .patch('/api/articles/1')
+    .send(newVote)
+    .expect(200)
+    .then(({body}) => {
+      expect(body).toEqual(updatedArticle)
+  })})
+  test('404: should return an appropriate error message when passed an article id that returns no results', () => {
+    const newVote = { inc_votes : 1 }
+    return request(app)
+    .patch('/api/articles/999')
+    .send(newVote)
+    .expect(404)
+    .then(({body}) => {
+      // console.log(body)
+        expect(body.msg).toBe('No Article Found')
+    })
+});
+})
