@@ -1,5 +1,6 @@
 const db = require('../db/connection');
 const fs = require('fs/promises');
+const { commentData } = require('../db/data/test-data');
 
 function findALlTopics() {
   return db.query('SELECT * FROM topics').then((result) => {
@@ -89,6 +90,16 @@ function changeVotes(newVote, articleId){
   })
 }
 
+function removeComment(commentId){
+  return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`,[commentId])
+  .then((result) => {
+    if (result.rows.length === 0){
+      return Promise.reject({status:404, msg: 'Comment Not Found'})
+    }
+    return result.rows
+  })
+}
+
 module.exports = {
   findALlTopics,
   findArticleById,
@@ -97,5 +108,6 @@ module.exports = {
   checkArticleExists,
   makeNewComment, 
   isExistingUser,
-  changeVotes
+  changeVotes, 
+  removeComment
 };
