@@ -37,7 +37,7 @@ function findAllArticles() {
 
 function findCommentsByArticle(articleId) {
   const id = [articleId];
-//   console.log('find comms')
+  //   console.log('find comms')
   return db
     .query(
       `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`,
@@ -46,56 +46,70 @@ function findCommentsByArticle(articleId) {
     .then((result) => {
       return result.rows;
     })
-    .catch((err) => {return Promise.reject({'status':400, 'msg':'No results Found*'})})
+    .catch((err) => {
+      return Promise.reject({ status: 400, msg: 'No results Found*' });
+    });
 }
 
 function checkArticleExists(articleId) {
   return db
-  .query(`SELECT * FROM articles WHERE article_id = $1`, [articleId])
-  .then(({rows})=> {
-    if (!rows.length){
-        return Promise.reject({'status':404, 'msg':'No Article Found'})
-    }
-  })
-}
-
-function makeNewComment(newComment, articleId){
-    const inputArr = [newComment.username, newComment.body, articleId]
-    return db
-    .query(`INSERT INTO comments (author, body, article_id) VALUES ($1,$2,$3) RETURNING *;`, inputArr)
-    .then(({rows}) => rows[0])
-}
-
-function isExistingUser(username){
-    return db
-    .query(`SELECT * FROM users WHERE username = $1`, [username])
-    .then(({rows})=> {
-      if (!rows.length){
-          return Promise.reject({'status':400, 'msg':'User Not registered'})
+    .query(`SELECT * FROM articles WHERE article_id = $1`, [articleId])
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 404, msg: 'No Article Found' });
       }
-    })
+    });
 }
 
-function changeVotes(newVote, articleId){
-  const queryValues = [newVote, articleId]
+function makeNewComment(newComment, articleId) {
+  const inputArr = [newComment.username, newComment.body, articleId];
+  return db
+    .query(
+      `INSERT INTO comments (author, body, article_id) VALUES ($1,$2,$3) RETURNING *;`,
+      inputArr
+    )
+    .then(({ rows }) => rows[0]);
+}
+
+function isExistingUser(username) {
+  return db
+    .query(`SELECT * FROM users WHERE username = $1`, [username])
+    .then(({ rows }) => {
+      if (!rows.length) {
+        return Promise.reject({ status: 400, msg: 'User Not registered' });
+      }
+    });
+}
+
+function changeVotes(newVote, articleId) {
+  const queryValues = [newVote, articleId];
   const sqlQuery = `UPDATE articles 
-  SET votes = votes + $1 WHERE  article_id = $2 RETURNING *;`
+  SET votes = votes + $1 WHERE  article_id = $2 RETURNING *;`;
   return db.query(sqlQuery, queryValues).then((result) => {
     if (result.rows.length === 0) {
-      return Promise.reject({'status':404, 'msg':'No Article Found'})
+      return Promise.reject({ status: 404, msg: 'No Article Found' });
+    } else {
+      return result.rows[0];
     }
-    else{
-      return result.rows[0]
-    }
-  })
+  });
 }
 
-function removeComment(commentId){
-  return db.query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`,[commentId])
+function removeComment(commentId) {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING *`, [
+      commentId,
+    ])
+    .then((result) => {
+      if (result.rows.length === 0) {
+        return Promise.reject({ status: 404, msg: 'Comment Not Found' });
+      }
+      return result.rows;
+    });
+}
+
+function fetchAllUsers(){
+  return db.query(`SELECT * FROM users;`)
   .then((result) => {
-    if (result.rows.length === 0){
-      return Promise.reject({status:404, msg: 'Comment Not Found'})
-    }
     return result.rows
   })
 }
@@ -106,8 +120,9 @@ module.exports = {
   findAllArticles,
   findCommentsByArticle,
   checkArticleExists,
-  makeNewComment, 
+  makeNewComment,
   isExistingUser,
-  changeVotes, 
-  removeComment
+  changeVotes,
+  removeComment,
+  fetchAllUsers
 };
