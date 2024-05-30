@@ -126,7 +126,6 @@ function deleteComment(req, res, next) {
 }
 
 function getAllUsers(req,res,next){
-  console.log('get all users cont')
   fetchAllUsers().then((users) => {
     console.log(users)
     res.status(200).send({users})
