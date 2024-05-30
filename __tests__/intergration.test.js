@@ -47,6 +47,7 @@ describe('GET /api/articles/:article_id', () => {
         title: 'Sony Vaio; or, The Laptop',
         topic: 'mitch',
         votes: 0,
+        comment_count : 0
       },
     ];
     return request(app)
@@ -57,6 +58,29 @@ describe('GET /api/articles/:article_id', () => {
         expect(body.article).toEqual(output);
       });
   });
+  test('get 200: should return an article as specified by its ID', () => {
+    const output = [
+      {
+        article_id: 9,
+        title: "They're not exactly dogs, are they?",
+        topic: "mitch",
+        author: "butter_bridge",
+        body: "Well? Think about it.",
+        created_at: "2020-06-06T09:10:00.000Z",
+        article_img_url:
+          "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+          comment_count: 2, 
+          votes: 0
+      },
+    ];
+    return request(app)
+      .get('/api/articles/9')
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.article.length).toBe(1);
+        expect(body.article).toEqual(output);
+      });
+    })
   test('get 404: should return an appropriate error message when passed an article id that returns no results', () => {
     return request(app)
       .get('/api/articles/999')
@@ -92,7 +116,7 @@ describe('GET /api/aricles', () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
-            comment_count: expect.any(String),
+            comment_count: expect.any(Number),
           });
           expect(article).not.toHaveProperty('body');
         });
