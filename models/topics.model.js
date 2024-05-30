@@ -53,9 +53,26 @@ function checkArticleExists(articleId) {
   .query(`SELECT * FROM articles WHERE article_id = $1`, [articleId])
   .then(({rows})=> {
     if (!rows.length){
-        return Promise.reject({'status':400, 'msg':'No results Found'})
+        return Promise.reject({'status':404, 'msg':'No Article Found'})
     }
   })
+}
+
+function makeNewComment(newComment, articleId){
+    const inputArr = [newComment.username, newComment.body, articleId]
+    return db
+    .query(`INSERT INTO comments (author, body, article_id) VALUES ($1,$2,$3) RETURNING *;`, inputArr)
+    .then(({rows}) => rows[0])
+}
+
+function isExistingUser(username){
+    return db
+    .query(`SELECT * FROM users WHERE username = $1`, [username])
+    .then(({rows})=> {
+      if (!rows.length){
+          return Promise.reject({'status':400, 'msg':'User Not registered'})
+      }
+    })
 }
 
 module.exports = {
@@ -64,4 +81,6 @@ module.exports = {
   findAllArticles,
   findCommentsByArticle,
   checkArticleExists,
+  makeNewComment, 
+  isExistingUser
 };
