@@ -36,7 +36,7 @@ describe('GET api', () => {
 
 describe('GET /api/articles/:article_id', () => {
   test('get 200: should return an article as specified by its ID', () => {
-    const output = [
+    const output = 
       {
         article_id: 2,
         article_img_url:
@@ -48,18 +48,17 @@ describe('GET /api/articles/:article_id', () => {
         topic: 'mitch',
         votes: 0,
         comment_count : 0
-      },
-    ];
+      }
+    ;
     return request(app)
       .get('/api/articles/2')
       .expect(200)
       .then(({ body }) => {
-        expect(body.article.length).toBe(1);
-        expect(body.article).toEqual(output);
+        expect(body.article).toMatchObject(output);
       });
   });
   test('get 200: should return an article as specified by its ID', () => {
-    const output = [
+    const output = 
       {
         article_id: 9,
         title: "They're not exactly dogs, are they?",
@@ -71,13 +70,12 @@ describe('GET /api/articles/:article_id', () => {
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           comment_count: 2, 
           votes: 0
-      },
-    ];
+      }
+    ;
     return request(app)
       .get('/api/articles/9')
       .expect(200)
       .then(({ body }) => {
-        expect(body.article.length).toBe(1);
         expect(body.article).toEqual(output);
       });
     })
@@ -134,6 +132,14 @@ describe('GET /api/aricles', () => {
       });
     });
   });
+  test('200: should return an empty array when the provided topic query has no related articles', () => {
+    return request(app)
+    .get('/api/articles?filter_by=paper')
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.articles).toEqual([]);
+    });
+  });
   test('should return a 404 when the topic query does not exist', () => {
     return request(app)
     .get('/api/articles?filter_by=yellow')
@@ -160,12 +166,12 @@ describe('GET /api/articles/:article_id/comments', () => {
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            article_id: expect.any(Number),
+            article_id: 9
           });
         });
       });
   });
-  test('200: empty array when article has no comments', () => {
+  test('200: should return an empty array when article has no comments', () => {
     return request(app)
       .get('/api/articles/2/comments')
       .expect(200)
@@ -174,7 +180,6 @@ describe('GET /api/articles/:article_id/comments', () => {
         expect(body.comments).toEqual([]);
       });
   });
-
   test('404: returns error when article_id does not exist', () => {
     return request(app)
       .get('/api/articles/999/comments')
@@ -247,7 +252,7 @@ describe('PATCH /api/articles/:article_id', () => {
       .send(newVote)
       .expect(200)
       .then(({ body }) => {
-        expect(body).toEqual(updatedArticle);
+        expect(body.updatedArticle).toEqual(updatedArticle);
       });
   });
   test('404: should return an appropriate error message when passed an article id that returns no results', () => {
@@ -260,8 +265,27 @@ describe('PATCH /api/articles/:article_id', () => {
         expect(body.msg).toBe('No Article Found');
       });
   });
-});
-
+  test('400: should return an appropriate error message when passed a non numerical value as inc_votes', () => {
+    const newVote = { inc_votes: 'orange' };
+    return request(app)
+      .patch('/api/articles/2')
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
+      });
+  });
+  test('400: should return an appropriate error message when passed an invalid article id', () => {
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch('/api/articles/pear')
+      .send(newVote)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
+      });
+  });
+})
 describe('DELETE /api/comments/:comment_id', () => {
   test('204: deletes comment and returns no content', () => {
     return request(app)
@@ -285,6 +309,14 @@ describe('DELETE /api/comments/:comment_id', () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe('Comment Not Found');
+      });
+  });
+  test('400: incorrect ID added should return an error', () => {
+    return request(app)
+      .delete('/api/comments/papaya')
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe('Bad Request');
       });
   });
 });

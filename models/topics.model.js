@@ -1,11 +1,17 @@
 const db = require('../db/connection');
-const fs = require('fs/promises');
-const { commentData } = require('../db/data/test-data');
 
 function findALlTopics() {
   return db.query('SELECT * FROM topics').then((result) => {
     return result.rows;
   });
+}
+
+function topicExists(topic){
+  return db.query('SELECT * FROM topics WHERE topics.slug = $1', [topic])
+  .then((result) => {
+    return result.rows
+})
+
 }
 
 function findArticleById(articleId) {
@@ -14,11 +20,11 @@ function findArticleById(articleId) {
  WHERE articles.article_id =$1 GROUP BY articles.article_id;`, [articleId])
     .then((result) => {
       return result.rows;
-    });
+    })
 }
 
 function findAllArticles(filterBy) {
-  let sqlQuery = `SELECT articles.*, COUNT(comments.comment_id)::INT AS comment_count
+  let sqlQuery = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes,articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count
   FROM articles 
   LEFT JOIN comments ON articles.article_id = comments.article_id`;
   const queryValues = [];
@@ -32,11 +38,7 @@ function findAllArticles(filterBy) {
   ORDER BY articles.created_at DESC`;
 
   return db.query(sqlQuery, queryValues).then((result) => {
-    const editedOutput = result.rows.map((article) => {
-      delete article.body;
-      return article;
-    });
-    return editedOutput;
+    return result.rows;
   });
 }
 
@@ -50,9 +52,6 @@ function findCommentsByArticle(articleId) {
     .then((result) => {
       return result.rows;
     })
-    .catch((err) => {
-      return Promise.reject({ status: 400, msg: 'No results Found' });
-    });
 }
 
 function checkArticleExists(articleId) {
@@ -117,6 +116,8 @@ function fetchAllUsers() {
   });
 }
 
+
+
 module.exports = {
   findALlTopics,
   findArticleById,
@@ -128,4 +129,5 @@ module.exports = {
   changeVotes,
   removeComment,
   fetchAllUsers,
+  topicExists
 };
