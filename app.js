@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const {
   getAllTopics,
-  getApi,
   getArticle,
   getAllArticles,
   getcommentsByArticle,
@@ -11,6 +10,9 @@ const {
   deleteComment,
   getAllUsers
 } = require('./controllers/topics.controller');
+const {
+  getApi
+} = require('./controllers/api.controller')
 
 app.use(express.json());
 

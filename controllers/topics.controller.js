@@ -1,16 +1,22 @@
 const {
   findALlTopics,
+} = require('../models/topics.model');
+const {
+  checkArticleExists,
+  isExistingUser,
+  topicExists
+} = require('../models/checkExists.model')
+const {
   findArticleById,
   findAllArticles,
+  changeVotes
+} = require('../models/articles.model')
+const {
   findCommentsByArticle,
-  checkArticleExists,
   makeNewComment,
-  isExistingUser,
-  changeVotes,
-  removeComment,
-  fetchAllUsers,
-  topicExists,
-} = require('../models/topics.model');
+  removeComment
+} = require('../models/comments.model')
+const {fetchAllUsers} = require('../models/user.model')
 const endpoints = require('../endpoints.json');
 
 function getAllTopics(req, res, next) {
@@ -27,11 +33,7 @@ function getAllTopics(req, res, next) {
     });
 }
 
-function getApi(req, res, next) {
-  if (endpoints) {
-    res.status(200).send({ api: endpoints });
-  }
-}
+
 
 function getArticle(req, res, next) {
   const { article_id } = req.params;
@@ -138,7 +140,6 @@ function getAllUsers(req, res, next) {
 
 module.exports = {
   getAllTopics,
-  getApi,
   getArticle,
   getAllArticles,
   getcommentsByArticle,
