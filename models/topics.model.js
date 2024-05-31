@@ -1,10 +1,17 @@
 const db = require('../db/connection');
-const { commentData } = require('../db/data/test-data');
 
 function findALlTopics() {
   return db.query('SELECT * FROM topics').then((result) => {
     return result.rows;
   });
+}
+
+function topicExists(topic){
+  return db.query('SELECT * FROM topics WHERE topics.slug = $1', [topic])
+  .then((result) => {
+    return result.rows
+})
+
 }
 
 function findArticleById(articleId) {
@@ -45,9 +52,6 @@ function findCommentsByArticle(articleId) {
     .then((result) => {
       return result.rows;
     })
-    .catch((err) => {
-      return Promise.reject({ status: 400, msg: 'No results Found' });
-    });
 }
 
 function checkArticleExists(articleId) {
@@ -112,6 +116,8 @@ function fetchAllUsers() {
   });
 }
 
+
+
 module.exports = {
   findALlTopics,
   findArticleById,
@@ -123,4 +129,5 @@ module.exports = {
   changeVotes,
   removeComment,
   fetchAllUsers,
+  topicExists
 };

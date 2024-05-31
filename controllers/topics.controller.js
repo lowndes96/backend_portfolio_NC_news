@@ -9,6 +9,7 @@ const {
   changeVotes,
   removeComment,
   fetchAllUsers,
+  topicExists,
 } = require('../models/topics.model');
 const endpoints = require('../endpoints.json');
 
@@ -48,14 +49,18 @@ function getArticle(req, res, next) {
 }
 
 function getAllArticles(req, res, next) {
-  const filterBy = req.query.filter_by;
-  findAllArticles(filterBy)
-    .then((articles) => {
-      if (articles.length === 0) {
+  const filterByTopic = req.query.filter_by;
+  topicExists(filterByTopic)
+    .then((topic) => {
+      if (topic.length === 0 && filterByTopic) {
         return Promise.reject({ status: 404, msg: 'No results Found' });
-      } else {
-        res.status(200).send({ articles: articles });
       }
+    })
+    .then(() => {
+      return findAllArticles(filterByTopic);
+    })
+    .then((articles) => {
+      res.status(200).send({ articles: articles });
     })
     .catch((err) => {
       next(err);
@@ -105,7 +110,7 @@ function patchVotes(req, res, next) {
   const { article_id } = req.params;
   changeVotes(updateVote, article_id)
     .then((updatedArticle) => {
-      res.status(200).send(updatedArticle);
+      res.status(200).send({ updatedArticle });
     })
     .catch((err) => {
       next(err);
