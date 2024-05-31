@@ -34,9 +34,6 @@ function getApi(req, res, next) {
 
 function getArticle(req, res, next) {
   const { article_id } = req.params;
-  if (isNaN(article_id)) {
-    res.status(400).send({ status: 400, msg: 'Bad Request' });
-  }
   findArticleById(article_id)
     .then((article) => {
       if (article.length === 1) {
@@ -68,10 +65,6 @@ function getAllArticles(req, res, next) {
 function getcommentsByArticle(req, res, next) {
   const { article_id } = req.params;
   const promises = [checkArticleExists(article_id)];
-  if (isNaN(article_id)) {
-    res.status(400).send({ status: 400, msg: 'Bad Request' });
-  }
-
   if (article_id) {
     promises.push(findCommentsByArticle(article_id));
   }

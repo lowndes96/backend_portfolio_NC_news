@@ -13,7 +13,7 @@ function findArticleById(articleId) {
  WHERE articles.article_id =$1 GROUP BY articles.article_id;`, [articleId])
     .then((result) => {
       return result.rows;
-    });
+    })
 }
 
 function findAllArticles(filterBy) {

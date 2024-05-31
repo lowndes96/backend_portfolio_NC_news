@@ -33,6 +33,15 @@ app.delete('/api/comments/:comment_id', deleteComment);
 app.get('/api/users',getAllUsers)
 
 app.use((err, req, res, next) => {
+  if (err.code === '22P02'){
+    res.status(400).send({msg: 'Bad Request'})
+  }
+  else{
+    next(err)
+  }
+})
+
+app.use((err, req, res, next) => {
   if (err.msg) {
     res.status(err.status).send({ msg: err.msg });
   } else {
