@@ -1,5 +1,4 @@
 const db = require('../db/connection');
-const fs = require('fs/promises');
 const { commentData } = require('../db/data/test-data');
 
 function findALlTopics() {

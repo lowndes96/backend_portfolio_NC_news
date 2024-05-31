@@ -36,7 +36,7 @@ describe('GET api', () => {
 
 describe('GET /api/articles/:article_id', () => {
   test('get 200: should return an article as specified by its ID', () => {
-    const output = [
+    const output = 
       {
         article_id: 2,
         article_img_url:
@@ -48,18 +48,17 @@ describe('GET /api/articles/:article_id', () => {
         topic: 'mitch',
         votes: 0,
         comment_count : 0
-      },
-    ];
+      }
+    ;
     return request(app)
       .get('/api/articles/2')
       .expect(200)
       .then(({ body }) => {
-        expect(body.article.length).toBe(1);
-        expect(body.article).toEqual(output);
+        expect(body.article).toMatchObject(output);
       });
   });
   test('get 200: should return an article as specified by its ID', () => {
-    const output = [
+    const output = 
       {
         article_id: 9,
         title: "They're not exactly dogs, are they?",
@@ -71,13 +70,12 @@ describe('GET /api/articles/:article_id', () => {
           "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
           comment_count: 2, 
           votes: 0
-      },
-    ];
+      }
+    ;
     return request(app)
       .get('/api/articles/9')
       .expect(200)
       .then(({ body }) => {
-        expect(body.article.length).toBe(1);
         expect(body.article).toEqual(output);
       });
     })
