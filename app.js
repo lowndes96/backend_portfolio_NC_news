@@ -13,6 +13,10 @@ const {
 const {
   getApi
 } = require('./controllers/api.controller')
+const cors = require('cors'); 
+
+
+app.use(cors()); 
 
 app.use(express.json());
 

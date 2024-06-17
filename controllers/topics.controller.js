@@ -19,6 +19,7 @@ const {
 const {fetchAllUsers} = require('../models/user.model')
 const endpoints = require('../endpoints.json');
 
+
 function getAllTopics(req, res, next) {
   findALlTopics()
     .then((allTopics) => {
